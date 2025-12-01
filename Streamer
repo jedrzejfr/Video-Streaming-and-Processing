@@ -1,0 +1,56 @@
+
+import cv2
+import socket
+import numpy as numpy
+import pickles as pickle
+import os
+
+s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.setsockopt(socket.SOL SOCKET, socket.SO SNDBUF, 1000000)
+server_ip='172.20.10.2'
+server_port = 28 #Streaming video port
+cap = cv2.VideoCapture(-1)
+
+cords-socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+server_ip2 = "172.20.10.3" 
+server_port2 = 30 #Coordinate reciving port
+cords.bind({server_ip2, server_port2))
+
+print("Streamer is listening for variables")
+
+ret, frame= cap.read() 
+frame_centre_x= frame.shape[1]//2 
+frame_centre_y= frame. shape[0]//2
+
+while True:
+	ret, buffer = cap.read()
+	cv2.imshow('streaming', buffer)
+	ret, buffer = cv2.imencode('.jpg',buffer, [int(cv2.IMWRITE_JPEG_QUALITY), 30]) 
+	x_as_bytes =  pickle.dumps (buffer)
+	s.sendto((x_as_bytes), (server_ip,server_port))
+	contour_data, =cords.recvfrom(999999999)
+	contours=pickle.loads(contour_data)
+	if contours:
+		largest contour = max(contours, key=cv2.contourArea) 
+		x,y,w,h = cv2.boundingRect(largest contour) 
+		dot_centre_x = x + w // 2
+		dot_centre_y = y + h// 2
+		direction = ""
+		if dot_centre_x < frame_centre_x -20:
+			direction += "LEFT"
+		elif dot_centre_x> frame_centre_x + 20: 
+			direction += "RIGHT"
+
+		if dot_centre_y<frame_centre_y -20:
+			direction += "UP"
+		elif dot_centre_y> frame_centre_y + 20: 
+			direction += "DOWN"
+
+		if direction:
+			print("Dot moving: (direction.strip()}")
+		else:
+			print("Centered")
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+		break
+cv2.destroyAllWindows()
+cap.release()
