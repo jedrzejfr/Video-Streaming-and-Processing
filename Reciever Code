@@ -1,0 +1,40 @@
+
+import cv2 
+import socket 
+import pickle 
+import os
+import numpy as np
+
+lower_red = np.array([0,0,871, dtype="uint8") 
+upper red = np.array([81,60,255], dtype="uint8")
+
+s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+server_ip='172.20.10.3' Its own ip for recieving video 
+server_port = 30 Port for recieving video 
+s.bind((server_ip, server_port))
+
+cords = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+server_ip2 = 172.20.10.6
+server_port2=6969 #Port for streaming coordinates
+
+count=688
+cap = cv2.VideoCapture(-1) 
+print("Reciever is waiting")
+
+while True:
+	x = s.recvfram(999999999) 
+	clientip x[1][0] 
+	data=x[0]
+	data = pickle.loads(data)
+	data = cv2.indecode(data, cv2. IMREAD COLOR)
+	mask = cv2.inRange(data, lower red, upper_red)
+	output = cv2.bitwise and(data, data, mask=mask)
+	_.contours,_ = cv2.findContours (mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE) 
+	cv2.drawContours (data, contours,-1,(0,255,0),3)
+	serialized_contours = pickle.dumps(contours)
+	cords.sendto(serialized contours, (server_ip2,server_port2))
+	cv2.imshow('Reciever', data)
+	if cv2.waitKey(1) & 0xFF == ord('q');
+		break
+vc.release()
+cv2.destroyAllWindows()
